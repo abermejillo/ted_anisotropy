@@ -172,8 +172,7 @@ def dissipation_tau_z_tension(thickness, radius, nu, E, rho, T, c_v , kappa, alp
         factor2 = 6 / Xi**2 - 6 / Xi ** 3
     D = E * thickness ** 3 / (12 * (1 - 2 * nu))
     alpha, beta = alpha_beta(D, thickness, radius, tension)
-    omega = np.sqrt(D / (rho * thickness)) / (2 * radius ** 2) * np.sqrt(
-        (alpha ** 2 + beta ** 2) ** 2 - (radius ** 2 * tension / D) ** 2)
+    omega = omega_tension_pl(thickness, radius, nu, E, rho, tension)
     integral_den = 1/radius**2 * (0.5*(alpha**4*(sp.jv(0, alpha)**2+sp.jv(1, alpha)) + beta**4*(sp.iv(0, beta)**2 - sp.iv(1, beta))) + 2*alpha**2*beta**2 * (beta*sp.iv(1, beta)*sp.jv(0,alpha) + alpha*sp.jv(1,alpha)*sp.iv(0,beta)) / (alpha**2+beta**2))
     integral_num = 0.5 * (sp.jv(0, alpha)**2 * (alpha**2 - beta**2 + beta*sp.iv(1,beta)/sp.iv(0,beta)**2 * (2*(beta**2 - alpha**2)*sp.iv(0,beta)/(alpha**2+beta**2) + beta*sp.iv(1,beta))) + (2*alpha*(beta**2 - alpha**2)*sp.jv(0, alpha)*sp.jv(1, alpha))/(alpha**2+beta**2) + alpha**2*sp.jv(1, alpha)**2)
     F = tension/D * integral_num/integral_den
@@ -223,7 +222,7 @@ def dissipation_tau_z_tension(h, radius, nu, E, rho, T, c_v , kappa, alpha_T, pr
     integral_den = (1/radius**2) * (0.5*(alpha**4*(sp.jv(0, alpha)**2+sp.jv(1, alpha)**2) + B**2*beta**4*(sp.iv(0, beta)**2 - sp.iv(1, beta)**2)) + 2*B*alpha**2*beta**2 * (beta*sp.iv(1, beta)*sp.jv(0,alpha) + alpha*sp.jv(1,alpha)*sp.iv(0,beta)) / (alpha**2+beta**2))
     integral_num = 0.5 * (sp.jv(0, alpha)**2 * (alpha**2 - beta**2 + beta*sp.iv(1,beta)/sp.iv(0,beta)**2 * (2*(beta**2 - alpha**2)*sp.iv(0,beta)/(alpha**2+beta**2) + beta*sp.iv(1,beta))) + (2*alpha*(beta**2 - alpha**2)*sp.jv(0, alpha)*sp.jv(1, alpha))/(alpha**2+beta**2) + alpha**2*sp.jv(1, alpha)**2)
 
-    gamma_tension = tension / D * integral_num / integral_den
+    gamma_tension = (tension) / D * integral_num / integral_den
 
     factor3 = 1 / (1 + gamma_tension)
 
