@@ -247,7 +247,7 @@ def dissipation_z_tension(h, radius, nu, E, rho, T, c_v , kappa, alpha_T, preten
     else: # approximation of the sinh and cosh if Xi values are too high.
         factor2 = 6 / Xi**2 - 6 / Xi** 3
 
-    B = 1/(sp.iv(0,beta)/sp.jv(0,alpha))
+    B = 1/(sp.iv(0,beta)/sp.jv(0,alpha) )
     integral = 0.5*(alpha**4*(sp.jv(0, alpha)**2+sp.jv(1, alpha)**2) + B**2*beta**4*(sp.iv(0, beta)**2 - sp.iv(1, beta)**2)) + 2*B*alpha**2*beta**2 * (beta*sp.iv(1, beta)*sp.jv(0,alpha) + alpha*sp.jv(1,alpha)*sp.iv(0,beta)) / (alpha**2+beta**2)
 
     factor_EM = rho * w0** 2 * radius ** 4
@@ -277,17 +277,10 @@ def dissipation_kz_kr_tension_anis(h, r, nu, E, rho, T, c_v , kappa_z, kappa_r, 
             l_n = (1/2 * ( (kappa_r[t]/kappa_z[t])*(x0_n/r)**2 + np.sqrt((kappa_r[t]/kappa_z[t])**2*(x0_n/r)**4 + (w0[t]*rho*c_v[t]/kappa_z[t])**2)))**0.5
             m_n = (1/2 * ( -(kappa_r[t]/kappa_z[t])*(x0_n/r)**2 + np.sqrt((kappa_r[t]/kappa_z[t])**2*(x0_n/r)**4 + (w0[t]*rho*c_v[t]/kappa_z[t])**2)))**0.5
 
-            if l_n*h>5:
-                print('approx')
-                c1_n = np.cosh(5)* np.cos(m_n*h/2)
-                c2_n = np.cosh(5) * np.sin(m_n*h/2)
-                c3_n = np.cosh(5) * np.sin(m_n*h/2)
-                c4_n = np.cosh(5) * np.cos(m_n*h/2)
-            else:
-                c1_n = np.cosh(l_n*h/2) * np.cos(m_n*h/2)
-                c2_n = np.sinh(l_n*h/2) * np.sin(m_n*h/2)
-                c3_n = np.cosh(l_n*h/2) * np.sin(m_n*h/2)
-                c4_n = np.sinh(l_n*h/2) * np.cos(m_n*h/2)
+            c1_n = np.cosh(l_n*h/2) * np.cos(m_n*h/2)
+            c2_n = np.sinh(l_n*h/2) * np.sin(m_n*h/2)
+            c3_n = np.cosh(l_n*h/2) * np.sin(m_n*h/2)
+            c4_n = np.sinh(l_n*h/2) * np.cos(m_n*h/2)
 
             d1_n = (l_n ** 3 - 3 * l_n * m_n ** 2) * (l_n * h / (l_n ** 2 + m_n ** 2) * (c1_n ** 2 + c2_n ** 2) +
                                 4 * l_n * m_n / (l_n ** 2 + m_n ** 2) ** 2 * (c2_n * c4_n - c1_n * c3_n) -
