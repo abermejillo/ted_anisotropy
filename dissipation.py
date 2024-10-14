@@ -277,12 +277,13 @@ def dissipation_kz_kr_tension_anis(h, r, nu, E, rho, T, c_v , kappa_z, kappa_r, 
             l_n = (1/2 * ( (kappa_r[t]/kappa_z[t])*(x0_n/r)**2 + np.sqrt((kappa_r[t]/kappa_z[t])**2*(x0_n/r)**4 + (w0[t]*rho*c_v[t]/kappa_z[t])**2)))**0.5
             m_n = (1/2 * ( -(kappa_r[t]/kappa_z[t])*(x0_n/r)**2 + np.sqrt((kappa_r[t]/kappa_z[t])**2*(x0_n/r)**4 + (w0[t]*rho*c_v[t]/kappa_z[t])**2)))**0.5
 
-            if l_n*h>5:
+            limit = 200
+            if l_n*h > limit:
                 print('approx')
-                c1_n = np.cosh(5)* np.cos(m_n*h/2)
-                c2_n = np.cosh(5) * np.sin(m_n*h/2)
-                c3_n = np.cosh(5) * np.sin(m_n*h/2)
-                c4_n = np.cosh(5) * np.cos(m_n*h/2)
+                c1_n = np.cosh(limit/2)* np.cos(m_n*h/2)
+                c2_n = np.cosh(limit/2) * np.sin(m_n*h/2)
+                c3_n = np.cosh(limit/2) * np.sin(m_n*h/2)
+                c4_n = np.cosh(limit/2) * np.cos(m_n*h/2)
             else:
                 c1_n = np.cosh(l_n*h/2) * np.cos(m_n*h/2)
                 c2_n = np.sinh(l_n*h/2) * np.sin(m_n*h/2)
