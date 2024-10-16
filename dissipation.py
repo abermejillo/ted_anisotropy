@@ -41,26 +41,6 @@ def omega_tension_pl(thickness, radius, nu, E, rho, tension):
 
 ###########################################################################
 
-def dissipation_tau_r(r, mu, nu, E, rho, T, c_v , kappa, alpha, w0):
-    Xi = r/mu * np.sqrt(np.pi*w0*rho*c_v/(2*kappa))
-    factor1 = (1 + nu) / (1 - 2*nu) * E * alpha ** 2 * T / (rho * c_v)
-    if max(Xi)<10:
-        factor2 = 6/Xi**2 - 6/Xi**3*(np.sinh(Xi)+np.sin(Xi))/(np.cosh(Xi) + np.cos(Xi))
-    else: # approximation of the sinh and cosh if Xi values are too high.
-        factor2 = 6 / Xi**2 - 6 / Xi ** 3
-    Q = factor1*factor2
-    return Q
-
-def dissipation_tau_z(thickness, nu, E, rho, T, c_v , kappa, alpha, w0):
-    Xi = thickness * np.sqrt(w0*rho*c_v/(2*kappa))
-    factor1 = (1 + nu) / (1 - 2*nu) * E * alpha ** 2 * T / (rho * c_v)
-    if max(Xi)<10:
-        factor2 = 6/Xi**2 - 6/Xi**3*(np.sinh(Xi)+np.sin(Xi))/(np.cosh(Xi) + np.cos(Xi))
-    else: # approximation of the sinh and cosh if Xi values are too high.
-        factor2 = 6 / Xi**2 - 6 / Xi ** 3
-    Q = factor1*factor2
-    return Q
-
 def dissipation_kz_kr(h, r, nu, E, rho, T, c_v , kappa, alpha_T, w0, N_MAX):
     Q = []
     x0 = sp.jn_zeros(0, N_MAX)
@@ -162,45 +142,9 @@ def dissipation_kz_kr_anis(h, r, nu, E, rho, T, c_v , kappa_z, kappa_r, alpha_T,
         Q.append(1 / (2*np.pi) * DELTA_E / E_MAX)
 
     return np.array(Q)
-
-def dissipation_tau_z_tension(thickness, radius, nu, E, rho, T, c_v , kappa, alpha, w0, tension):
-    Xi = thickness * np.sqrt(w0*rho*c_v/(2*kappa))
-    factor1 = (1 + nu) / (1 - nu) * E * alpha ** 2 * T / (rho * c_v)
-    if max(Xi)<10:
-        factor2 = 6/Xi**2 - 6/Xi**3*(np.sinh(Xi)+np.sin(Xi))/(np.cosh(Xi) + np.cos(Xi))
-    else: # approximation of the sinh and cosh if Xi values are too high.
-        factor2 = 6 / Xi**2 - 6 / Xi ** 3
-    D = E * thickness ** 3 / (12 * (1 - 2 * nu))
-    alpha, beta = alpha_beta(D, thickness, radius, tension)
-    omega = omega_tension_pl(thickness, radius, nu, E, rho, tension)
-    integral_den = 1/radius**2 * (0.5*(alpha**4*(sp.jv(0, alpha)**2+sp.jv(1, alpha)) + beta**4*(sp.iv(0, beta)**2 - sp.iv(1, beta))) + 2*alpha**2*beta**2 * (beta*sp.iv(1, beta)*sp.jv(0,alpha) + alpha*sp.jv(1,alpha)*sp.iv(0,beta)) / (alpha**2+beta**2))
-    integral_num = 0.5 * (sp.jv(0, alpha)**2 * (alpha**2 - beta**2 + beta*sp.iv(1,beta)/sp.iv(0,beta)**2 * (2*(beta**2 - alpha**2)*sp.iv(0,beta)/(alpha**2+beta**2) + beta*sp.iv(1,beta))) + (2*alpha*(beta**2 - alpha**2)*sp.jv(0, alpha)*sp.jv(1, alpha))/(alpha**2+beta**2) + alpha**2*sp.jv(1, alpha)**2)
-    F = tension/D * integral_num/integral_den
-    factor3 = 1/(1+F)
-    Q = factor1*factor2*factor3
-    return Q, omega
     
 ###########################################################
 # Calculations of dissipation with tension contributions
-
-def dissipation_tau_z_tension_w(thickness, radius, nu, E, rho, T, c_v , kappa, alpha_T, tension):
-    D = E * thickness ** 3 / (12 * (1 - 2 * nu))
-    alpha, beta = alpha_beta(D, thickness, radius, tension)
-    w0 = np.sqrt(D / (rho * thickness)) / (2 * radius ** 2) * np.sqrt(
-        (alpha ** 2 + beta ** 2) ** 2 - (radius ** 2 * tension / D) ** 2)
-
-    Xi = thickness * np.sqrt(w0*rho*c_v/(2*kappa))
-    factor1 = (1 + nu) / (1 - nu) * E * alpha_T ** 2 * T / (rho * c_v)
-    if max(Xi)<10:
-        factor2 = 6/Xi**2 - 6/Xi**3*(np.sinh(Xi)+np.sin(Xi))/(np.cosh(Xi) + np.cos(Xi))
-    else: # approximation of the sinh and cosh if Xi values are too high.
-        factor2 = 6 / Xi**2 - 6 / Xi ** 3
-    integral_den = 1/radius**2 * (0.5*(alpha**4*(sp.jv(0, alpha)**2+sp.jv(1, alpha)) + beta**4*(sp.iv(0, beta)**2 - sp.iv(1, beta))) + 2*alpha**2*beta**2 * (beta*sp.iv(1, beta)*sp.jv(0,alpha) + alpha*sp.jv(1,alpha)*sp.iv(0,beta)) / (alpha**2+beta**2))
-    integral_num = 0.5 * (sp.jv(0, alpha)**2 * (alpha**2 - beta**2 + beta*sp.iv(1,beta)/sp.iv(0,beta)**2 * (2*(beta**2 - alpha**2)*sp.iv(0,beta)/(alpha**2+beta**2) + beta*sp.iv(1,beta))) + (2*alpha*(beta**2 - alpha**2)*sp.jv(0, alpha)*sp.jv(1, alpha))/(alpha**2+beta**2) + alpha**2*sp.jv(1, alpha)**2)
-    F = tension/D * integral_num/integral_den
-    factor3 = 1/(1+F)
-    Q = factor1*factor2*factor3
-    return np.array(Q), np.array(w0)
 
 def dissipation_tau_z_tension(h, radius, nu, E, rho, T, c_v , kappa, alpha_T, pretension):
     tension = tension_thick(integral_alpha, h, E, nu) + pretension
@@ -322,15 +266,3 @@ def dissipation_kz_kr_tension_anis(h, r, nu, E, rho, T, c_v , kappa_z, kappa_r, 
     return np.array(Q), np.array(w0)
 
 
-def dissipation_r_curry(h, r, nu, E, rho, T, c_v , kappa, alpha_T, pretension):
-    tension = tension_thick(integral_alpha, h, E, nu) + pretension
-    tension = np.interp(T, T_integral_alpha, tension) # tension is computed with a specific spacing, here we correct for that
-    omega = omega_tension_pl(h, r, nu, E, rho, tension)
-
-    tau = r**2*rho*c_v / (sp.jn_zeros(0,1)**2 * kappa )
-    mu = 5
-    c4 = 1.8519
-    c5 = 2*E*alpha_T**2*T/(c_v*rho*(1-2*nu))
-    Q = 2*np.pi*(mu**2*omega*tau)*c4*c5 / ((mu**2 * omega*tau)**2*(2 + c5) + np.pi**2*c4)
-
-    return Q, omega
